@@ -17,7 +17,7 @@ now = datetime.datetime.now()
 today = str(now.strftime("%d/%m/%Y")).replace('/','-')
 
 # log in to google
-gc = gspread.login('worldheraldreporting@gmail.com', 'WilfordBrimleysMu$t@che')
+gc = gspread.login('USER NAME HERE', 'PASSWORD HERE')
 
 # open the spreadsheet
 wks = gc.open("douglas jail scraper").sheet1
