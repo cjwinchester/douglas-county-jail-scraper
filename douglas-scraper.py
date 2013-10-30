@@ -8,9 +8,22 @@ from mechanize import Browser
 from bs4 import *
 from time import *
 import re
+import gspread
+import datetime
+
+now = datetime.datetime.now()
+
+# today
+today = str(now.strftime("%d/%m/%Y")).replace('/','-')
+
+# log in to google
+gc = gspread.login('worldheraldreporting@gmail.com', 'WilfordBrimleysMu$t@che')
+
+# open the spreadsheet
+wks = gc.open("douglas jail scraper").sheet1
 
 # open a file to write to
-f = open('douglas-booked.txt', 'wb')
+f = open('douglas-booked-' + today + '.txt', 'wb')
 
 # add some headers
 f.write('id|last|rest|crime|age|sex|race|height|weight|facility|admission-date|admission-time|bond|fines|how-fresh\n')
@@ -51,7 +64,7 @@ for thing in letters:
     # check to see if the search returned any records
     error = re.compile(r'No results matched your query')
     if error.search(str(soup)):
-        print 'Nobody in DCCC has a last name that starts with ' + thing.upper() + '...\n\n'
+        print 'Nobody in DCCC has a last name that starts with ' + thing.upper()
         sleep(3)
         mech.back()
         continue
@@ -129,10 +142,14 @@ for thing in letters:
         fresh = findfresh.group().replace('Data current as of ','').strip()
         
         # put it all together
-        fullrecord = (id, last, rest, charges, age, sex, race, height, weight, facility, admissiondate, admissiontime, bond, fines, fresh, '\n')
+        fullrecord = (id, last, rest, charges, age, sex, race, height, weight, facility, admissiondate, admissiontime, bond, fines, fresh, today)
         
-        # write it to file
+        # write it to our spreadsheet
+        wks.append_row(fullrecord)
+        
+        # write it to our file
         f.write("|".join(fullrecord))
+        
         print "Success! Record written. Going back for more...\n"
         
         # navigate back
