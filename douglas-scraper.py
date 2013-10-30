@@ -54,7 +54,7 @@ for thing in letters:
 	# fill out the form
     mech.form['lname'] = thing
 	
-	# submit, read in the results page
+	# submit and read in the results page
     req = mech.submit()
     resultspage = req.read()
 	
