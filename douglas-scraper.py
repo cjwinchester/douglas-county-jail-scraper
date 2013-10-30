@@ -26,7 +26,7 @@ wks = gc.open("douglas jail scraper").sheet1
 f = open('douglas-booked-' + today + '.txt', 'wb')
 
 # add some headers
-f.write('id|last|rest|crime|age|sex|race|height|weight|facility|admission-date|admission-time|bond|fines|how-fresh\n')
+f.write('id|last|rest|crime|age|sex|race|height|weight|facility|admission-date|admission-time|bond|fines|how-fresh|today\n')
 
 # crank up a browser
 mech = Browser()
