@@ -27,8 +27,8 @@ wks = gc.open("douglas jail scraper")
 wks.add_worksheet(title=today, rows="1", cols="15")
 
 # delete yesterday's worksheet
-#yesterdaysheet = wks.worksheet(yesterday)
-#wks.del_worksheet(yesterdaysheet)
+yesterdaysheet = wks.worksheet(yesterday)
+wks.del_worksheet(yesterdaysheet)
 
 # select today's worksheet
 worksheet = wks.worksheet(today)
