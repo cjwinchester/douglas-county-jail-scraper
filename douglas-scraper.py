@@ -11,22 +11,36 @@ import re
 import gspread
 import datetime
 
-now = datetime.datetime.now()
-
 # today
-today = str(now.strftime("%d/%m/%Y")).replace('/','-')
+today = str(datetime.date.today().strftime("%m-%d-%Y"))
+
+# yesterday
+yesterday = str((datetime.date.today() - datetime.timedelta(1)).strftime("%m-%d-%Y"))
 
 # log in to google
-gc = gspread.login('USER NAME HERE', 'PASSWORD HERE')
+gc = gspread.login('worldheraldreporting@gmail.com', 'WilfordBrimleysMu$t@che')
 
 # open the spreadsheet
-wks = gc.open("douglas jail scraper").sheet1
+wks = gc.open("douglas jail scraper")
+
+# create a new worksheet
+wks.add_worksheet(title=today, rows="1", cols="15")
+
+# delete yesterday's worksheet
+yesterdaysheet = wks.worksheet(yesterday)
+wks.del_worksheet(yesterdaysheet)
+
+# select today's worksheet
+worksheet = wks.worksheet(today)
+
+# add headers to worksheet
+worksheet.append_row(["id","last","rest","crime","age","sex","race","height","weight","facil","admissiondate","admissiontime","bond","fines","howfresh"])
 
 # open a file to write to
 f = open('douglas-booked-' + today + '.txt', 'wb')
 
-# add some headers
-f.write('id|last|rest|crime|age|sex|race|height|weight|facility|admission-date|admission-time|bond|fines|how-fresh|today\n')
+# add headers
+f.write('id|last|rest|crime|age|sex|race|height|weight|facility|admission-date|admission-time|bond|fines|how-fresh\n')
 
 # crank up a browser
 mech = Browser()
@@ -142,10 +156,10 @@ for thing in letters:
         fresh = findfresh.group().replace('Data current as of ','').strip()
         
         # put it all together
-        fullrecord = (id, last, rest, charges, age, sex, race, height, weight, facility, admissiondate, admissiontime, bond, fines, fresh, today)
+        fullrecord = (id, last, rest, charges, age, sex, race, height, weight, facility, admissiondate, admissiontime, bond, fines, fresh)
         
         # write it to our spreadsheet
-        wks.append_row(fullrecord)
+        worksheet.append_row(fullrecord)
         
         # write it to our file
         f.write("|".join(fullrecord))
