@@ -18,7 +18,7 @@ today = str(datetime.date.today().strftime("%m-%d-%Y"))
 yesterday = str((datetime.date.today() - datetime.timedelta(1)).strftime("%m-%d-%Y"))
 
 # log in to google
-gc = gspread.login('XXXXXXXXXXXXXXXXXXX', 'XXXXXXXXXXXXXXXXXXXXXXX')
+gc = gspread.login('XXXXXXXXXX@gmail.com', 'XXXXXXXXXXXXXXXX')
 
 # open the spreadsheet
 wks = gc.open("douglas jail scraper")
@@ -27,19 +27,33 @@ wks = gc.open("douglas jail scraper")
 wks.add_worksheet(title=today, rows="1", cols="15")
 
 # delete yesterday's worksheet
-yesterdaysheet = wks.worksheet(yesterday)
-wks.del_worksheet(yesterdaysheet)
+#yesterdaysheet = wks.worksheet(yesterday)
+#wks.del_worksheet(yesterdaysheet)
 
 # select today's worksheet
 worksheet = wks.worksheet(today)
 
 # add headers to worksheet
-worksheet.append_row(["id","last","rest","crime","age","sex","race","height","weight","facil","admissiondate","admissiontime","bond","fines","howfresh"])
+worksheet.update_acell("A1", "id")
+worksheet.update_acell("B1", "last")
+worksheet.update_acell("C1", "rest")
+worksheet.update_acell("D1", "crime")
+worksheet.update_acell("E1", "age")
+worksheet.update_acell("F1", "sex")
+worksheet.update_acell("G1", "race")
+worksheet.update_acell("H1", "height")
+worksheet.update_acell("I1", "weight")
+worksheet.update_acell("J1", "facil")
+worksheet.update_acell("K1", "admissiondate")
+worksheet.update_acell("L1", "admissiontime")
+worksheet.update_acell("M1", "bond")
+worksheet.update_acell("N1", "fines")
+worksheet.update_acell("O1", "howfresh")
 
 # open a file to write to
 f = open('douglas-booked-' + today + '.txt', 'wb')
 
-# add headers
+# add headers to text file
 f.write('id|last|rest|crime|age|sex|race|height|weight|facility|admission-date|admission-time|bond|fines|how-fresh\n')
 
 # crank up a browser
