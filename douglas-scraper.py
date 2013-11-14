@@ -18,7 +18,7 @@ today = str(datetime.date.today().strftime("%m-%d-%Y"))
 yesterday = str((datetime.date.today() - datetime.timedelta(1)).strftime("%m-%d-%Y"))
 
 # log in to google
-gc = gspread.login('worldheraldreporting@gmail.com', 'WilfordBrimleysMu$t@che')
+gc = gspread.login('XXXXXXXXXXXXXXXXXXX', 'XXXXXXXXXXXXXXXXXXXXXXX')
 
 # open the spreadsheet
 wks = gc.open("douglas jail scraper")
