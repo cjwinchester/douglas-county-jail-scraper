@@ -1,0 +1,58 @@
+<!doctype html>
+<html>
+
+<body>
+
+<script src="js/inmate-data.js"></script>
+
+<script>
+
+// median function
+function median(values) {
+    values.sort( function(a,b) {return a - b;} );
+    var half = Math.floor(values.length/2);
+    if(values.length % 2)
+        return values[half];
+    else
+        return (values[half-1] + values[half]) / 2.0;
+}
+ 
+var bmiArray = []
+var len = inmates.length;
+var pounds;
+var feet;
+
+for (var i=0; i<len; i++) {
+    if (parseInt(inmates[i].height.substr(0,1)) == 0)
+        {feet = null}
+    else {feet = parseInt(inmates[i].height.substr(0,1))};
+    var inches = parseInt(inmates[i].height.substr(2,99));
+    var high = parseInt(inches) + (parseInt(feet)*12);
+    if (parseInt(inmates[i].weight) == 0)
+        {pounds = null}
+    else {pounds = inmates[i].weight}
+    var bmiheight = Math.pow(high, 2)
+    var bmi = (pounds / bmiheight) * 703
+
+if (isNaN(bmi) == true) 
+    {console.log(inmates[i].rest + " " + inmates[i].last + "'s BMI entry is borked. Continuing ...")}
+else
+    {bmiArray.push(bmi)}
+} // end for loop
+
+// get the average
+var sum = 0;
+for (var l=0; l < bmiArray.length; l++){
+    sum += parseInt(bmiArray[l])
+    }
+var avg = sum / bmiArray.length;
+
+// get the median
+var med = median(bmiArray)
+
+console.log('Average BMI at the Douglas County Jail today is ' + avg + '. Median BMI is ' + med + '.')
+
+</script>
+
+</body>
+</html>
