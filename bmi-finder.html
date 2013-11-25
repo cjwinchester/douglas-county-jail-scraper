@@ -24,12 +24,12 @@ var feet;
 
 for (var i=0; i<len; i++) {
     if (parseInt(inmates[i].height.substr(0,1)) == 0)
-        {feet = null}
+        {continue}
     else {feet = parseInt(inmates[i].height.substr(0,1))};
     var inches = parseInt(inmates[i].height.substr(2,99));
     var high = parseInt(inches) + (parseInt(feet)*12);
     if (parseInt(inmates[i].weight) == 0)
-        {pounds = null}
+        {continue}
     else {pounds = inmates[i].weight}
     var bmiheight = Math.pow(high, 2)
     var bmi = (pounds / bmiheight) * 703
