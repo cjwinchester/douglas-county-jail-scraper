@@ -8,47 +8,10 @@ from mechanize import Browser
 from bs4 import *
 from time import *
 import re
-import gspread
 import datetime
 
 # today
 today = str(datetime.date.today().strftime("%m-%d-%Y"))
-
-# yesterday
-yesterday = str((datetime.date.today() - datetime.timedelta(1)).strftime("%m-%d-%Y"))
-
-# log in to google
-gc = gspread.login('XXXXXXXXXX@gmail.com', 'XXXXXXXXXXXXXXXX')
-
-# open the spreadsheet
-wks = gc.open("douglas jail scraper")
-
-# create a new worksheet
-wks.add_worksheet(title=today, rows="1", cols="15")
-
-# delete yesterday's worksheet
-yesterdaysheet = wks.worksheet(yesterday)
-wks.del_worksheet(yesterdaysheet)
-
-# select today's worksheet
-worksheet = wks.worksheet(today)
-
-# add headers to worksheet
-worksheet.update_acell("A1", "id")
-worksheet.update_acell("B1", "last")
-worksheet.update_acell("C1", "rest")
-worksheet.update_acell("D1", "crime")
-worksheet.update_acell("E1", "age")
-worksheet.update_acell("F1", "sex")
-worksheet.update_acell("G1", "race")
-worksheet.update_acell("H1", "height")
-worksheet.update_acell("I1", "weight")
-worksheet.update_acell("J1", "facil")
-worksheet.update_acell("K1", "admissiondate")
-worksheet.update_acell("L1", "admissiontime")
-worksheet.update_acell("M1", "bond")
-worksheet.update_acell("N1", "fines")
-worksheet.update_acell("O1", "howfresh")
 
 # open a file to write to
 f = open('douglas-booked-' + today + '.txt', 'wb')
@@ -114,69 +77,112 @@ for thing in letters:
 
         # id
         findid = re.search('Data Number:</strong>\s\d+', str(table))
-        id = findid.group().replace("Data Number:</strong> ","")
+        if findid:
+            id = findid.group().replace("Data Number:</strong> ","")
+        else:
+            id = "no id listed"
 
         # admission date and time
         findadmission = re.search('<strong>Admission Date - Time:</strong>\s\d\d/\d\d/\d\d\d\d - \d\d:\d\d', str(table))
-        admission = findadmission.group().replace('<strong>Admission Date - Time:</strong> ','')
-        admissiondate = admission.split(' - ')[0].strip()
-        admissiontime = admission.split(' - ')[1].strip()
-
+        if findadmission:
+            admission = findadmission.group().replace('<strong>Admission Date - Time:</strong> ','')
+            admissiondate = admission.split(' - ')[0].strip()
+            admissiontime = admission.split(' - ')[1].strip()
+        else:
+            admissiondate = "no admission date listed"
+            admissiontime = "no admission time listed"
+			
         # name
         findname = re.search('<strong>Name</strong><br/>[-,a-zA-Z\s]+', str(table))
-        name = findname.group().replace('<strong>Name</strong><br/>','')
-        rest = name.split(',')[1].strip()
-        last = name.split(',')[0].strip()
+        if findname:
+            name = findname.group().replace('<strong>Name</strong><br/>','')
+            if "," in name:
+                rest = name.split(',')[1].strip()
+                last = name.split(',')[0].strip()
+            else:
+                rest = ""
+                last = name
+        else:
+            rest = "no name listed"
+            last = "no name listed"
+        
         print 'Pulling record for ' + rest + " " + last
 
         # sex
         findsex = re.search('<strong>Sex</strong><br/>[a-zA-Z]+', str(table))
-        sex = findsex.group().replace('<strong>Sex</strong><br/>','')
+        if findsex:
+            sex = findsex.group().replace('<strong>Sex</strong><br/>','')
+        else:
+            sex = "no sex listed"
 
         # race
         findrace = re.search('<strong>Race</strong><br/>[a-zA-Z]+', str(table))
-        race = findrace.group().replace('<strong>Race</strong><br/>','')
+        if findrace:
+            race = findrace.group().replace('<strong>Race</strong><br/>','')
+        else:
+            race = "no race listed"
 
         # age
         findage = re.search('<strong>Age</strong><br/>[0-9]+', str(table))
-        age = findage.group().replace('<strong>Age</strong><br/>','')
+        if findage:
+            age = findage.group().replace('<strong>Age</strong><br/>','')
+        else:
+            age = "no age listed"
 
         # height
         findheight = re.search('<strong>Height</strong><br/>[\'"0-9]+', str(table))
-        height = findheight.group().replace('<strong>Height</strong><br/>','')
+        if findheight:
+            height = findheight.group().replace('<strong>Height</strong><br/>','')
+        else:
+            height = "no height listed"
 
         # weight
         findweight = re.search('<strong>Weight</strong><br/>[0-9a-zA-Z\s]+', str(table))
-        weight = findweight.group().replace('<strong>Weight</strong><br/>','').replace(' lb','')
+        if findweight:
+            weight = findweight.group().replace('<strong>Weight</strong><br/>','').replace(' lb','')
+        else:
+            weight = "no weight listed"
         
         # facility
         findfacil = re.search('<strong>Facility</strong><br/>[-0-9a-zA-Z\s]+', str(table))
-        facility = findfacil.group().replace('<strong>Facility</strong><br/>','').strip()
+        if findfacil:
+            facility = findfacil.group().replace('<strong>Facility</strong><br/>','').strip()
+        else:
+            facility = "no facility listed"
 
         # charges
         findcharges = re.search('<strong>Charges</strong><br/>[<>/\$0-9a-zA-Z\s]+', str(table))
-        charges = findcharges.group().replace('<strong>Charges</strong><br/>','').replace("<br/>",", ").replace("</td>","").replace("<td colspan","").strip()
+        if findcharges:
+            charges = findcharges.group().replace('<strong>Charges</strong><br/>','').replace("<br/>",", ").replace("</td>","").replace("<td colspan","").strip()
+        else:
+            charges = "no charges listed"
 
         # bond
         findbond = re.search('<strong>Bond Amount</strong><br/>[/\$\(\)\%,0-9a-zA-Z\s]+', str(table))
-        bond = findbond.group().replace('<strong>Bond Amount</strong><br/>','')
+        if findbond:
+            bond = findbond.group().replace('<strong>Bond Amount</strong><br/>','')
+        else:
+            bond = "no bond found"
 
         # fines and costs
         findfines = re.search('<strong>Fines &amp; Costs:</strong>\s[\$\.,\%0-9a-zA-Z\s]+', str(table))
-        fines = findfines.group().replace('<strong>Fines &amp; Costs:</strong>','').strip()
+        if findfines:
+            fines = findfines.group().replace('<strong>Fines &amp; Costs:</strong>','').strip()
+        else:
+            fines = "no fines listed"
 
         # freshness
         findfresh = re.search('Data current as of \d\d/\d\d/\d\d\d\d', str(soup))
-        fresh = findfresh.group().replace('Data current as of ','').strip()
+        if findfresh:
+            fresh = findfresh.group().replace('Data current as of ','').strip()
+        else:
+            fresh = "no date listed"
         
         # put it all together
-        fullrecord = (id, last, rest, charges, age, sex, race, height, weight, facility, admissiondate, admissiontime, bond, fines, fresh)
-        
-        # write it to our spreadsheet
-        worksheet.append_row(fullrecord)
+        fullrecord = (id, last, rest, charges, age, sex, race, height, weight, facility, admissiondate, admissiontime, bond, fines, fresh)        
         
         # write it to our file
-        f.write("|".join(fullrecord))
+        f.write("|".join(fullrecord) + "\n")
         
         print "Success! Record written. Going back for more...\n"
         
@@ -189,4 +195,5 @@ for thing in letters:
     html = page.read()
     soup = BeautifulSoup(html)
 
+f.flush()
 f.close()
